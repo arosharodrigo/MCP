@@ -179,7 +179,7 @@ void *run(void * tid)
 void validate_thread_count(char *thread_count)
 {
     num_threads = atoi(thread_count);
-    if (num_threads == 0 || num_threads > MAX_THREADS) {
+    if (num_threads <= 0 || num_threads > MAX_THREADS) {
         printf("num_threads should be in range 1 and %d(MAXTHREADS)\n", MAX_THREADS);
         exit(0);
     }

@@ -175,6 +175,8 @@ void *run(void * tid)
         mat_temp[i] = malloc( NUM_TRIALS * sizeof(double));
     }
 
+    //each thread responsible for some number of rows.
+    //ie. rows range from 0 to size, while columns range from 0 to NUM_TRIALS.
 	for (i=0; i < size; i++) {
         for (j=0; j < NUM_TRIALS; j++) {
             mat_temp[i][j] = calculate_point_value(i + start, j);

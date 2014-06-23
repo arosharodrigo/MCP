@@ -55,6 +55,8 @@ int main (int argc, char *argv[])
         printf("Usage: [%s -s] OR [%s -p <num_threads>] OR [%s -p <num_threads> -v]\n", argv[0], argv[0], argv[0]);
 		exit(0);
     }
+    free(vec1);
+    free(vec2);
 	return 0;
 }
 

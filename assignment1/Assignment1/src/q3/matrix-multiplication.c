@@ -35,6 +35,7 @@ void    initialize_matrices(void);
 double  calculate_point_value(long x, long y);
 double  calculate_cumulative_diff(double **matrix2, double **matrix1);
 void    validate_thread_count(char *thread_count);
+void    free_matrices(void);
 void    print_matrix(double **matrix);
 
 int main (int argc, char *argv[])
@@ -59,6 +60,7 @@ int main (int argc, char *argv[])
         printf("Usage: [%s -s] OR [%s -p <num_threads>] OR [%s -p <num_threads> -v]\n", argv[0], argv[0], argv[0]);
 		exit(0);
     }
+    free_matrices();
 	return 0;
 }
 
@@ -115,16 +117,16 @@ void handle_parallel_version()
 
 void handle_parallel_version_with_verification()
 {
-    struct timespec     start_time_vector_init, end_time_vector_init;
+    struct timespec     start_time_matrix_init, end_time_matrix_init;
     struct timespec 	start_time_calculation_sequntial, end_time_calculation_sequntial;
     struct timespec     start_time_calculation_parallel, end_time_calculation_parallel;
-    float 			    comp_time_calculation_sequntial, comp_time_calculation_parallel, comp_time_vector_init; 	// in milli seconds
+    float 			    comp_time_calculation_sequntial, comp_time_calculation_parallel, comp_time_matrix_init; 	// in milli seconds
     unsigned long 		sec, nsec;
     double              cumulative_diff;
 
-    GET_TIME(start_time_vector_init);
+    GET_TIME(start_time_matrix_init);
 	initialize_matrices();
-    GET_TIME(end_time_vector_init);
+    GET_TIME(end_time_matrix_init);
 
     GET_TIME(start_time_calculation_sequntial);
     execute_sequential_version();
@@ -134,13 +136,13 @@ void handle_parallel_version_with_verification()
 	execute_parallel_version();
     GET_TIME(end_time_calculation_parallel);
 
-    comp_time_vector_init = elapsed_time_msec(&start_time_vector_init, &end_time_vector_init, &sec, &nsec);
+    comp_time_matrix_init = elapsed_time_msec(&start_time_matrix_init, &end_time_matrix_init, &sec, &nsec);
     comp_time_calculation_sequntial = elapsed_time_msec(&start_time_calculation_sequntial, &end_time_calculation_sequntial, &sec, &nsec);
     comp_time_calculation_parallel = elapsed_time_msec(&start_time_calculation_parallel, &end_time_calculation_parallel, &sec, &nsec);
 
     cumulative_diff = calculate_cumulative_diff(mat_mul_sequential, mat_mul_parallel);
 
-    printf("#Trials=%ld : Elapsed-time-for-vector-initialization(ms)=%.2f : Elapsed-time-for-sequential-calculation(ms)=%.2f : Elapsed-time-for-parallel-calculation(ms)=%.2f : #Threads=%ld\n", (long) NUM_TRIALS, comp_time_vector_init, comp_time_calculation_sequntial, comp_time_calculation_parallel, num_threads);
+    printf("#Trials=%ld : Elapsed-time-for-matrix-initialization(ms)=%.2f : Elapsed-time-for-sequential-calculation(ms)=%.2f : Elapsed-time-for-parallel-calculation(ms)=%.2f : #Threads=%ld\n", (long) NUM_TRIALS, comp_time_matrix_init, comp_time_calculation_sequntial, comp_time_calculation_parallel, num_threads);
     printf("Cumulative-Difference(Parallel-Sequential): %f\n", cumulative_diff);
 }
 
@@ -190,6 +192,12 @@ void *run(void * tid)
         }
 	}
    	pthread_mutex_unlock (&mutex);
+
+    for(i = 0; i < size; i++) {
+        free(mat_temp[i]);
+    }
+    free(mat_temp);
+
    	pthread_exit(NULL);
 }
 
@@ -269,6 +277,24 @@ void initialize_matrices(void)
     	    mat_mul_parallel[i][j] = 0;
     	}
     }
+}
+
+void free_matrices(void)
+{
+	long i;
+
+    // de-allocate all matrices
+    for(i = 0; i < NUM_TRIALS; i++) {
+        free(mat1[i]);
+        free(mat2[i]);
+        free(mat_mul_sequential[i]);
+        free(mat_mul_parallel[i]);
+    }
+
+    free(mat1);
+    free(mat2);
+    free(mat_mul_sequential);
+    free(mat_mul_parallel);
 }
 
 float elapsed_time_msec(struct timespec *begin, struct timespec *end, long *sec, long *nsec)

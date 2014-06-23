@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <math.h>
 #include <ctype.h>
 #include <time.h>		// for clock_gettime()
 #include <errno.h>		// for perror()
@@ -23,8 +24,6 @@ double  **mat_mul_sequential, **mat_mul_parallel;
 long    num_threads = 0;
 pthread_mutex_t mutex;
 
-void    initialize_matrices(void);
-double  calculate_point_value(long x, long y);
 void    execute_sequential_version(void);
 void    handle_sequential_version(void);
 void    *run(void *);
@@ -32,6 +31,9 @@ void    execute_parallel_version(void);
 void    handle_parallel_version(void);
 void    handle_parallel_version_with_verification(void);
 float   elapsed_time_msec(struct timespec *, struct timespec *, long *, long *);
+void    initialize_matrices(void);
+double  calculate_point_value(long x, long y);
+double  calculate_cumulative_diff(double **matrix2, double **matrix1);
 void    validate_thread_count(char *thread_count);
 void    print_matrix(double **matrix);
 
@@ -90,15 +92,6 @@ void execute_sequential_version(void)
     }
 }
 
-double calculate_point_value(long x, long y) {
-    long k;
-    double res = 0;
-    for (k=0; k < NUM_TRIALS; k++) {
-        res += mat1[x][k] * mat2[k][y];
-    }
-    return res;
-}
-
 //-----------------parallel code related------------------
 
 void handle_parallel_version()
@@ -127,6 +120,7 @@ void handle_parallel_version_with_verification()
     struct timespec     start_time_calculation_parallel, end_time_calculation_parallel;
     float 			    comp_time_calculation_sequntial, comp_time_calculation_parallel, comp_time_vector_init; 	// in milli seconds
     unsigned long 		sec, nsec;
+    double              cumulative_diff;
 
     GET_TIME(start_time_vector_init);
 	initialize_matrices();
@@ -144,14 +138,10 @@ void handle_parallel_version_with_verification()
     comp_time_calculation_sequntial = elapsed_time_msec(&start_time_calculation_sequntial, &end_time_calculation_sequntial, &sec, &nsec);
     comp_time_calculation_parallel = elapsed_time_msec(&start_time_calculation_parallel, &end_time_calculation_parallel, &sec, &nsec);
 
-    print_matrix(mat1);
-    print_matrix(mat2);
-    print_matrix(mat_mul_sequential);
-    print_matrix(mat_mul_parallel);
+    cumulative_diff = calculate_cumulative_diff(mat_mul_sequential, mat_mul_parallel);
 
-
-//    printf("#Trials=%ld : Elapsed-time-for-vector-initialization(ms)=%.2f : Elapsed-time-for-sequential-calculation(ms)=%.2f : Elapsed-time-for-parallel-calculation(ms)=%.2f : #Threads=%ld\n", (long) NUM_TRIALS, comp_time_vector_init, comp_time_calculation_sequntial, comp_time_calculation_parallel, num_threads);
-//    printf("Dot-Product-Sequential: %f : Dot-Product-Parallel: %f : Difference(Sequential-Parallel): %f\n", dot_product_sequential, dot_product_parallel, (dot_product_sequential - dot_product_parallel));
+    printf("#Trials=%ld : Elapsed-time-for-vector-initialization(ms)=%.2f : Elapsed-time-for-sequential-calculation(ms)=%.2f : Elapsed-time-for-parallel-calculation(ms)=%.2f : #Threads=%ld\n", (long) NUM_TRIALS, comp_time_vector_init, comp_time_calculation_sequntial, comp_time_calculation_parallel, num_threads);
+    printf("Cumulative-Difference(Parallel-Sequential): %f\n", cumulative_diff);
 }
 
 void execute_parallel_version()
@@ -203,6 +193,28 @@ void *run(void * tid)
 
 
 //-----------------utility functions------------------
+
+// used in both sequential and parallel versions to calculate matrix multiplication of a particular point.
+double calculate_point_value(long x, long y) {
+    long k;
+    double res = 0;
+    for (k=0; k < NUM_TRIALS; k++) {
+        res += mat1[x][k] * mat2[k][y];
+    }
+    return res;
+}
+
+double calculate_cumulative_diff(double **matrix1, double **matrix2) {
+    long i, j;
+    double res = 0;
+
+    for (i=0; i < NUM_TRIALS; i++) {
+        for (j=0; j < NUM_TRIALS; j++) {
+    	    res += fabs(matrix2[i][j] - matrix1[i][j]);
+    	}
+    }
+    return res;
+}
 
 void validate_thread_count(char *thread_count)
 {

@@ -195,7 +195,8 @@ void *run(void * tid)
 //-----------------utility functions------------------
 
 // used in both sequential and parallel versions to calculate matrix multiplication of a particular point.
-double calculate_point_value(long x, long y) {
+double calculate_point_value(long x, long y)
+{
     long k;
     double res = 0;
     for (k=0; k < NUM_TRIALS; k++) {
@@ -204,7 +205,8 @@ double calculate_point_value(long x, long y) {
     return res;
 }
 
-double calculate_cumulative_diff(double **matrix1, double **matrix2) {
+double calculate_cumulative_diff(double **matrix1, double **matrix2)
+{
     long i, j;
     double res = 0;
 

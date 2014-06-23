@@ -34,7 +34,6 @@ int main (int argc, char *argv[])
 {
     bool sequential_condition = (argc == 2 && (strcmp(argv[1],"-s") == 0));
     bool parallel_condition = (argc == 3 && (strcmp(argv[1],"-p"))  == 0);
-    srand(time(NULL));
 
     if (sequential_condition) {
         printf("Sequential version executing. Please wait.....\n");
@@ -69,12 +68,13 @@ void handle_sequential_version()
 
 void execute_sequential_version(void)
 {
+    int 	seq_id = 1;
     long	i, sequential_hits = 0;
 	double	x, y;
 	pi_seqential = 0;
 	for (i=0; i < NUM_TRIALS; i++) {
-		x = ((double) rand())/ RAND_MAX;
-		y = ((double) rand())/ RAND_MAX;
+		x = ((double) rand_r(&seq_id)) / RAND_MAX;
+		y = ((double) rand_r(&seq_id)) / RAND_MAX;
 		if (x*x + y*y < 1.0)
 			sequential_hits++;
 	}

@@ -152,13 +152,14 @@ int main(int argc, char *argv[]) {
 
 
    // Make sure a filename is specified
-   if (argv[1] == NULL) {
-      printf("USAGE: %s <bitmap filename>\n", argv[0]);
+   if (argv[1] == NULL || argv[2] == NULL || atoi(argv[2]) <= 0) {
+      printf("USAGE: %s <bitmap filename> <num_threads>\n", argv[0]);
       exit(1);
    }
    
    fname = argv[1];
-   
+   num_procs = atoi(argv[2]);
+
    // Read in the file
    CHECK_ERROR((fd = open(fname, O_RDONLY)) < 0);
    // Get the file info (for file length)
@@ -205,7 +206,7 @@ int main(int argc, char *argv[]) {
    pthread_attr_init(&attr);
    pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
    
-   CHECK_ERROR((num_procs = sysconf(_SC_NPROCESSORS_ONLN)) <= 0);
+//   CHECK_ERROR((num_procs = sysconf(_SC_NPROCESSORS_ONLN)) <= 0);
    num_per_thread = num_pixels / num_procs;
    excess = num_pixels % num_procs;
    
@@ -263,11 +264,11 @@ int main(int argc, char *argv[]) {
    CHECK_ERROR(close(fd) < 0);
    
    free(pid);
-   for(i = 0; i < num_procs; i++) {
-      free(arg[i].red);
-      free(arg[i].green);
-      free(arg[i].blue);
-   }
+//   for(i = 0; i < num_procs; i++) {
+//      free(arg[i].red);
+//      free(arg[i].green);
+//      free(arg[i].blue);
+//   }
    free(arg);
    pthread_attr_destroy(&attr);
    

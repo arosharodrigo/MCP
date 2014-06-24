@@ -115,13 +115,14 @@ int wordcount_cmp(const void *v1, const void *v2)
  *  Memory map the file and divide file on a word border i.e. a space.
  *	Assign each portion of the file to a thread
  */
-void wordcount_splitter(void *data_in)
+void wordcount_splitter(void *data_in, int num_threads_temp)
 {
    pthread_attr_t attr;
    pthread_t * tid;
    int i,num_procs;
 
-   CHECK_ERROR((num_procs = sysconf(_SC_NPROCESSORS_ONLN)) <= 0);
+//   CHECK_ERROR((num_procs = sysconf(_SC_NPROCESSORS_ONLN)) <= 0);
+   num_procs = num_threads_temp;
    dprintf("THe number of processors is %d\n\n", num_procs);
 
    wc_data_t * data = (wc_data_t *)data_in; 
@@ -400,18 +401,19 @@ int main(int argc, char *argv[]) {
    int disp_num;
    struct stat finfo;
    char * fname, * disp_num_str;
+   int num_threads;
 
    struct timeval starttime,endtime;
 
    // Make sure a filename is specified
-   if (argv[1] == NULL)
-   {
-      printf("USAGE: %s <filename> [Top # of results to display]\n", argv[0]);
+   if (argv[1] == NULL || argv[2] == NULL || atoi(argv[2]) <= 0) {
+        printf("USAGE: %s <filename> <num_threads> [Top # of results to display]\n", argv[0]);
       exit(1);
    }
    
    fname = argv[1];
-   disp_num_str = argv[2];
+   num_threads = atoi(argv[2]);
+   disp_num_str = argv[3];
 
    printf("Wordcount: Running...\n");
    
@@ -438,7 +440,7 @@ int main(int argc, char *argv[]) {
 
    gettimeofday(&starttime,0);
 
-   wordcount_splitter(&wc_data);
+   wordcount_splitter(&wc_data, num_threads);
    
 
    gettimeofday(&endtime,0);

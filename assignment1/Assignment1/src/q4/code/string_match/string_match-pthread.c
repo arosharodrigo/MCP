@@ -74,7 +74,7 @@ typedef struct {
  char *key4_final;
 
 
-void string_match_splitter(void *data_in);
+void string_match_splitter(void *data_in, int num_threads);
 int getnextline(char* output, int max_len, char* file);
 void *string_match_map(void *args);
 void string_match_reduce(void *key_in, void **vals_in, int vals_len);
@@ -124,7 +124,7 @@ void compute_hashes(char* word, char* final_word)
 /** string_match_splitter()
  *  Splitter Function to assign portions of the file to each thread
  */
-void string_match_splitter(void *data_in)
+void string_match_splitter(void *data_in, int num_threads)
 {
 	key1_final = malloc(strlen(key1) + 1);
 	key2_final = malloc(strlen(key2) + 1);
@@ -140,7 +140,8 @@ void string_match_splitter(void *data_in)
     pthread_t * tid;
     int i, num_procs;
 
-    CHECK_ERROR((num_procs = sysconf(_SC_NPROCESSORS_ONLN)) <= 0);
+//    CHECK_ERROR((num_procs = sysconf(_SC_NPROCESSORS_ONLN)) <= 0);
+    num_procs = num_threads;
     printf("THe number of processors is %d\n", num_procs);
 
     str_data_t * data = (str_data_t *)data_in; 
@@ -260,16 +261,18 @@ int main(int argc, char *argv[]) {
     char *fdata_keys;
     struct stat finfo_keys;
     char *fname_keys;
+    int num_threads;
 
 	 /* Option to provide the encrypted words in a file as opposed to source code */
     //fname_encrypt = "encrypt.txt";
     
-    if (argv[1] == NULL)
-    {
-        printf("USAGE: %s <keys filename>\n", argv[0]);
+    if (argv[1] == NULL || argv[2] == NULL || atoi(argv[2]) <= 0) {
+        printf("USAGE: %s <keys filename> <num_threads>\n", argv[0]);
         exit(1);
     }
+
     fname_keys = argv[1];
+    num_threads = atoi(argv[2]);
 
     struct timeval starttime,endtime;
     srand( (unsigned)time( NULL ) );
@@ -308,7 +311,7 @@ int main(int argc, char *argv[]) {
     printf("String Match: Calling Serial String Match\n");
 
     gettimeofday(&starttime,0);
-    string_match_splitter(&str_data);
+    string_match_splitter(&str_data, num_threads);
     gettimeofday(&endtime,0);
 
     printf("String Match: Completed %ld\n",(endtime.tv_sec - starttime.tv_sec));

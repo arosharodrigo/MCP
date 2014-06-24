@@ -99,13 +99,13 @@ int main(int argc, char *argv[])
 
 
    // Make sure a filename is specified
-   if (argv[1] == NULL)
-   {
-      printf("USAGE: %s <filename>\n", argv[0]);
+   if (argv[1] == NULL || argv[2] == NULL || atoi(argv[2]) <= 0) {
+      printf("USAGE: %s <filename> <num_threads>\n", argv[0]);
       exit(1);
    }
    
    fname = argv[1];
+   num_procs = atoi(argv[2]);
 
    // Read in the file
    CHECK_ERROR((fd = open(fname, O_RDONLY)) < 0);
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
    CHECK_ERROR((fdata = mmap(0, finfo.st_size + 1, 
       PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0)) == NULL);
 
-   CHECK_ERROR((num_procs = sysconf(_SC_NPROCESSORS_ONLN)) <= 0);
+//   CHECK_ERROR((num_procs = sysconf(_SC_NPROCESSORS_ONLN)) <= 0);
    printf("The number of processors is %d\n\n", num_procs);
 
    pthread_attr_init(&attr);

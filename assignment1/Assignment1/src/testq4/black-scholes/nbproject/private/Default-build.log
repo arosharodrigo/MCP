@@ -1,0 +1,32 @@
+gcc -c -Wall -O2  black_scholes.c -o black_scholes.o
+gcc -c -Wall -O2  gaussian.c -o gaussian.o
+gcc -c -Wall -O2  main.c -o main.o
+main.c: In function ‘main’:
+main.c:44:7: warning: variable ‘nthreads’ set but not used [-Wunused-but-set-variable]
+gcc -c -Wall -O2  parser.c -o parser.o
+gcc -c -Wall -O2  random.c -o random.o
+gcc -c -Wall -O2  dcmt0.4/lib/random_seed.c -o dcmt0.4/lib/random_seed.o
+dcmt0.4/lib/random_seed.c: In function ‘get_random_seed’:
+dcmt0.4/lib/random_seed.c:26:3: warning: dereferencing type-punned pointer will break strict-aliasing rules [-Wstrict-aliasing]
+gcc -c -Wall -O2  timer.c -o timer.o
+timer.c: In function ‘get_seconds’:
+timer.c:11:10: warning: unused variable ‘s’ [-Wunused-variable]
+timer.c: In function ‘init_timer’:
+timer.c:24:10: warning: unused variable ‘t’ [-Wunused-variable]
+gcc -c -Wall -O2  util.c -o util.o
+make -C dcmt0.4/lib
+make[1]: Entering directory `/home/prabath/Projects/MSC/semester-2/mcp/black-scholes/dcmt0.4/lib'
+gcc -c -Wall -O2  serialize.c -o serialize.o
+serialize.c:7:17: warning: extra tokens at end of #ifdef directive [enabled by default]
+serialize.c:15:15: warning: extra tokens at end of #ifdef directive [enabled by default]
+gcc -c -Wall -O2  init.c -o init.o
+gcc -c -Wall -O2  check32.c -o check32.o
+gcc -c -Wall -O2  prescr.c -o prescr.o
+gcc -c -Wall -O2  mt19937.c -o mt19937.o
+gcc -c -Wall -O2  eqdeg.c -o eqdeg.o
+eqdeg.c:736:13: warning: ‘show_distrib’ defined but not used [-Wunused-function]
+gcc -c -Wall -O2  sieve.c -o sieve.o
+gcc -c -Wall -O2  genmtrand.c -o genmtrand.o
+ar -cru libdcmt.a serialize.o init.o check32.o prescr.o mt19937.o eqdeg.o sieve.o genmtrand.o random_seed.o 
+make[1]: Leaving directory `/home/prabath/Projects/MSC/semester-2/mcp/black-scholes/dcmt0.4/lib'
+gcc -Wall -O2 black_scholes.o gaussian.o main.o parser.o random.o dcmt0.4/lib/random_seed.o timer.o util.o -o Q4.x -lpthread -lm -Ldcmt0.4/lib -ldcmt

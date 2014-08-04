@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="94">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="0">
+      <df name="dcmt0.4">
+        <df name="example">
+          <in>example1.c</in>
+          <in>example2.c</in>
+          <in>example3.c</in>
+          <in>log.c</in>
+          <in>log.h</in>
+          <in>timer.c</in>
+          <in>timer.h</in>
+        </df>
+        <df name="include">
+          <in>dc.h</in>
+          <in>serialize.h</in>
+          <in>timer.h</in>
+        </df>
+        <df name="lib">
+          <in>check32.c</in>
+          <in>dci.h</in>
+          <in>eqdeg.c</in>
+          <in>genmtrand.c</in>
+          <in>init.c</in>
+          <in>mt19937.c</in>
+          <in>prescr.c</in>
+          <in>random_seed.c</in>
+          <in>serialize.c</in>
+          <in>sieve.c</in>
+        </df>
+      </df>
+      <in>black_parallel_logic.c</in>
+      <in>black_scholes.c</in>
+      <in>black_scholes.h</in>
+      <in>gaussian.c</in>
+      <in>gaussian.h</in>
+      <in>main.c</in>
+      <in>parser.c</in>
+      <in>parser.h</in>
+      <in>random.c</in>
+      <in>random.h</in>
+      <in>timer.c</in>
+      <in>timer.h</in>
+      <in>util.c</in>
+      <in>util.h</in>
+    </df>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <platform>2</platform>
+      </toolsSet>
+      <compile>
+        <compiledirpicklist>
+          <compiledirpicklistitem>.</compiledirpicklistitem>
+          <compiledirpicklistitem>${AUTO_FOLDER}</compiledirpicklistitem>
+        </compiledirpicklist>
+        <compiledir>${AUTO_FOLDER}</compiledir>
+        <compilecommandpicklist>
+          <compilecommandpicklistitem>${MAKE} ${ITEM_NAME}.o</compilecommandpicklistitem>
+          <compilecommandpicklistitem>${AUTO_COMPILE}</compilecommandpicklistitem>
+        </compilecommandpicklist>
+        <compilecommand>${AUTO_COMPILE}</compilecommand>
+      </compile>
+      <dbx_gdbdebugger version="1">
+        <gdb_pathmaps>
+        </gdb_pathmaps>
+        <gdb_interceptlist>
+          <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
+        </gdb_interceptlist>
+        <gdb_options>
+          <DebugOptions>
+          </DebugOptions>
+        </gdb_options>
+        <gdb_buildfirst gdb_buildfirst_overriden="false" gdb_buildfirst_old="false"/>
+      </dbx_gdbdebugger>
+      <nativedebugger version="1">
+        <engine>gdb</engine>
+      </nativedebugger>
+      <runprofile version="9">
+        <runcommandpicklist>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+        </runcommandpicklist>
+        <runcommand>"${OUTPUT_PATH}"</runcommand>
+        <rundir>.</rundir>
+        <buildfirst>false</buildfirst>
+        <terminal-type>0</terminal-type>
+        <remove-instrumentation>0</remove-instrumentation>
+        <environment>
+        </environment>
+      </runprofile>
+    </conf>
+  </confs>
+</configurationDescriptor>
